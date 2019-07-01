@@ -7,6 +7,16 @@ def newCollumn():
 
 def addRG(line):
     print("Devia adicionar '"+line+"'ao automato");
+    aux = line.split('|')
+    regra = aux[0][1:2]
+    aux[0] = aux[0].split('=')
+    aux[0] = aux[0][1]
+    if regra not in states:
+        states.append(regra)
+    for valor in aux:
+        valor = valor.strip(' ')
+        print(valor)
+        #separado cada parte da regra.
     #implementar
 
 def addToken(line):
