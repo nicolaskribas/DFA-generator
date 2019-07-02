@@ -1,5 +1,6 @@
 AFND = []
 states = []
+final = []
 transitions = []
 state = 'S'
 realState = 'S'
@@ -9,6 +10,7 @@ changes = {}
 #   temp = changes['A']
 def newLine():
     AFND.append([[] for _ in range(len(transitions))])
+    final.append(False)
 
 def newCollumn():
     for i in range(len(AFND)):
@@ -23,7 +25,7 @@ def addRG(line):
         states.append(regra)
         newLine()
     else:
-        i=i
+        i=0
         #verificar se a regra é S ou não, se ela não for deve colocar ela no dicionario atribuindo a ela um novo valor que o nextState() vai encontrar
     for valor in aux:
         valor = valor.strip(' ')
@@ -67,11 +69,12 @@ def addToken(line):
             newLine()
             AFND[states.index(state)][transitions.index(symbol)].append(nextState())
             states.append(state)
-
+    final[states.index(state)] = True
 def main():
     file = open("text.txt","r")
     states.append('S')  #Adiciona o estado inicial S
     AFND.append([]) #Adiciona linha na tabela
+    final.append(False)
     for line in file:
         if line[0] == '<':  #Caso seja um Gramatica Regular ela é adicionada ao Automato
             addRG(line)
@@ -79,6 +82,6 @@ def main():
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
-        print(states[i],AFND[i])    #Print AFND final
+        print(final[i],states[i],AFND[i])    #Print AFND final
     file.close()
 main()
