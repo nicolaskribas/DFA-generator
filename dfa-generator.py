@@ -1,34 +1,72 @@
 AFND = []
 states = []
 transitions = []
+state = 'S'
+realState = 'S'
+changes = {}
+#novo valor -> changes['A'] = 'M'
+#if 'A' in changes:
+#   temp = changes['A']
+def newLine():
+    AFND.append([[] for _ in range(len(transitions))])
+
 def newCollumn():
     for i in range(len(AFND)):
         AFND[i].append([])
 
 def addRG(line):
-    print("Devia adicionar '"+line+"'ao automato");
     aux = line.split('|')
     regra = aux[0][1:2]
     aux[0] = aux[0].split('=')
     aux[0] = aux[0][1]
     if regra not in states:
         states.append(regra)
+        newLine()
+    else:
+        i=i
+        #verificar se a regra é S ou não, se ela não for deve colocar ela no dicionario atribuindo a ela um novo valor que o nextState() vai encontrar
     for valor in aux:
         valor = valor.strip(' ')
-        print(valor)
-        #separado cada parte da regra.
-    #implementar
+        if '<' not in valor:
+            #atribuir a regra como sendo final
+            if valor[0:1] not in transitions:
+                newCollumn()
+                transitions.append(valor[0:1])
+                AFND[states.index(regra)][transitions.index(valor[0:1])].append('-')
+            else:
+                AFND[states.index(regra)][transitions.index(valor[0:1])].append('-')
+        else:
+            #verificar se o valor da letra maiuscula ja esta sendo usado para colocar ela no dicionario e colocar outro valor para ela.
+            if valor[0:1] not in transitions:
+                newCollumn()
+                transitions.append(valor[0:1])
+                AFND[states.index(regra)][transitions.index(valor[0:1])].append(valor[2:3])
+            else:
+                AFND[states.index(regra)][transitions.index(valor[0:1])].append(valor[2:3])
+
+def nextState():
+    global state
+    global realState
+    if realState == 'S':
+        realState = 'A'
+    elif realState == 'R':
+        realState = 'U'
+    else:
+        realState = chr(ord(realState)+1)
+    state = realState
+    return state
 
 def addToken(line):
+    global state
     state = 'S'
     for symbol in line:
-        if symbol not in transitions and '\n' not in symbol:
-            newCollumn()
-            transitions.append(symbol)
-
-    print("Adicionando '"+line+"'ao automato")
-
-
+        if '\n' != symbol:
+            if symbol not in transitions:
+                newCollumn()
+                transitions.append(symbol)
+            newLine()
+            AFND[states.index(state)][transitions.index(symbol)].append(nextState())
+            states.append(state)
 
 def main():
     file = open("text.txt","r")
@@ -39,8 +77,8 @@ def main():
             addRG(line)
         else:
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
-    print(states)
-    print(transitions)
-    print(AFND)
+    print(transitions)  #Print AFND final
+    for i in range(len(states)):    #Print AFND final
+        print(states[i],AFND[i])    #Print AFND final
     file.close()
 main()
