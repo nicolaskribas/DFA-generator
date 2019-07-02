@@ -1,3 +1,4 @@
+import csv
 AFND = []
 states = []
 final = []
@@ -70,18 +71,27 @@ def addToken(line):
             AFND[states.index(state)][transitions.index(symbol)].append(nextState())
             states.append(state)
     final[states.index(state)] = True
+
 def main():
-    file = open("text.txt","r")
+
+    file = open("input.txt","r")
     states.append('S')  #Adiciona o estado inicial S
     AFND.append([]) #Adiciona linha na tabela
     final.append(False)
+
+
     for line in file:
         if line[0] == '<':  #Caso seja um Gramatica Regular ela é adicionada ao Automato
-            addRG(line)
+            #addRG(line)
+            i=0
         else:
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
+    file.close()
+    with open('output.csv', 'w') as file:
+        writer = csv.writer(file)
+        writer.writerows(AFND)
     file.close()
 main()
