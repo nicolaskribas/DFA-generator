@@ -5,7 +5,7 @@ final = []
 transitions = []
 state = 'S'
 realState = 'S'
-changes = {}
+changes = {'S':'S'}
 #novo valor -> changes['A'] = 'M'
 #if 'A' in changes:
 #   temp = changes['A']
@@ -16,6 +16,31 @@ def newLine():
 def newCollumn():
     for i in range(len(AFND)):
         AFND[i].append([])
+
+def addRG2(line):
+    rule = line.split('::=')[0].strip(' ')[1]
+    productions = line.split('::=')[1].split('|')
+    if rule not in changes:
+        changes[rule] = nextState()
+        states.append(state)
+        newLine()
+        rule = state
+    else:
+        rule = changes[rule]
+    for production in productions:
+        production = production.strip(' ')
+        if production[0] not in transitions and production[0] != 'ε':
+            newCollumn()
+            transitions.append(production[0])
+        if '<' in production:
+            if production[2] not in changes:
+                changes[production[2]] = nextState()
+                states.append(state)
+                newLine()
+            AFND[states.index(rule)][transitions.index(production[0])].append(changes[production[2]])
+        elif 'ε' in production:
+            final[states.index(rule)] = True
+
 
 def addRG(line):
     aux = line.split('|')
@@ -82,13 +107,13 @@ def main():
 
     for line in file:
         if line[0] == '<':  #Caso seja um Gramatica Regular ela é adicionada ao Automato
-            #addRG(line)
-            i=0
+            addRG2(line)
         else:
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
+    print(changes)
     file.close()
     with open('output.csv', 'w') as file:
         writer = csv.writer(file)
