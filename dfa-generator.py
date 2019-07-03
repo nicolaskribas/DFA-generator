@@ -19,7 +19,7 @@ def newCollumn():
         AFND[i].append([])
 
 def addRG2(line):
-    rule = line.split(' ::= ')[0]
+    rule = line.split('::=')[0].strip(' ')[1]
     productions = line.strip('\n').split(' ::= ')[1].split(' | ')
     print(rule)
     print(productions)
