@@ -2,4 +2,6 @@ se
 entao
 senao
 <S> ::= a<A> | e<A> | i<A> | o<A> | u<A> | <A>
-<A> ::= a<A> | e<A> | i<A> | o<A> | u<A> | ε
+<A> ::= a<A> | e<A> | i<A> | o<A> | u<A> | x<B> | ε
+<B> ::= <C>
+<C> ::= a<A>

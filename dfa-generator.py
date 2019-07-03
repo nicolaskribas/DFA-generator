@@ -112,7 +112,7 @@ def addToken(line):
 def removeEpsilon():
     if 'ε' in transitions:
         for state in states:
-            if state in espsilons:
+            if state in epsilons:
                 epsilons[state] += AFND[states.index(state)][transitions.index('ε')]
             else:
                 epsilons[state] = AFND[states.index(state)][transitions.index('ε')]
@@ -126,7 +126,7 @@ def removeEpsilon():
                             if transition2 not in epsilons[state]:
                                 epsilons[state] += transition2
                                 mudanca = True
-
+        print(epsilons)
         for state in epsilons:
             for transition in epsilons[state]:
                 for i in range(len(AFND[states.index(transition)])):
@@ -153,7 +153,7 @@ def main():
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
 
-    #removeEpsilon()
+    removeEpsilon()
 
     file.close()
     with open('output.csv', 'w') as file:
