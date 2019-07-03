@@ -18,8 +18,10 @@ def newCollumn():
         AFND[i].append([])
 
 def addRG2(line):
-    rule = line.split('::=')[0].strip(' ')[1]
-    productions = line.split('::=')[1].split('|')
+    rule = line.split(' ::= ')[0]
+    productions = line.strip('\n').split(' ::= ')[1].split(' | ')
+    print(rule)
+    print(productions)
     if rule not in changes:
         changes[rule] = nextState()
         states.append(state)
