@@ -6,6 +6,7 @@ transitions = []
 state = 'S'
 realState = 'S'
 changes = {'S':'S'}
+epsilons = {}
 #novo valor -> changes['A'] = 'M'
 #if 'A' in changes:
 #   temp = changes['A']
@@ -30,7 +31,11 @@ def addRG2(line):
     else:
         rule = changes[rule]
     for production in productions:
+<<<<<<< HEAD
         if production[0] not in transitions and production[0] != 'ε' and '<' not in production[0]:
+=======
+        if production[0] not in transitions and production[0] != 'ε':
+>>>>>>> f361a2d02ecf3be32c0e07350c5d5f04088a70d0
             newCollumn()
             transitions.append(production[0])
         elif production[0] == '<':
@@ -108,6 +113,11 @@ def addToken(line):
             states.append(state)
     final[states.index(state)] = True
 
+def removeEpsilon():
+    if 'ε' in transitions:
+        for state in states:
+            epsilons[state] += AFND[states.index(state)][transitions.index('ε')]
+
 def main():
 
     file = open("input.txt","r")
@@ -121,10 +131,14 @@ def main():
             addRG2(line)
         else:
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
+
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
+
+    removeEpsilon()
+
     file.close()
     with open('output.csv', 'w') as file:
         writer = csv.writer(file)
