@@ -30,10 +30,19 @@ def addRG2(line):
     else:
         rule = changes[rule]
     for production in productions:
-        production = production.strip(' ')
-        if production[0] not in transitions and production[0] != 'ε':
+        if production[0] not in transitions and production[0] != 'ε' and '<' not in production[0]:
             newCollumn()
             transitions.append(production[0])
+        elif production[0] == '<':
+            if 'ε' not in transitions:
+                newCollumn()
+                transitions.append('ε')
+            if production[1] not in changes:
+                changes[production[1]] = nextState()
+                states.append(state)
+                newLine()
+            AFND[states.index(rule)][transitions.index('ε')].append(changes[production[1]])
+            continue;
         if '<' in production:
             if production[2] not in changes:
                 changes[production[2]] = nextState()
