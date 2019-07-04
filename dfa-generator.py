@@ -52,37 +52,12 @@ def addRG2(line):
             AFND[states.index(rule)][transitions.index(production[0])].append(changes[production[2]])
         elif 'ε' in production:
             final[states.index(rule)] = True
-
-
-def addRG(line):
-    aux = line.split('|')
-    regra = aux[0][1:2]
-    aux[0] = aux[0].split('=')
-    aux[0] = aux[0][1]
-    if regra not in states:
-        states.append(regra)
-        newLine()
-    else:
-        i=0
-        #verificar se a regra é S ou não, se ela não for deve colocar ela no dicionario atribuindo a ela um novo valor que o nextState() vai encontrar
-    for valor in aux:
-        valor = valor.strip(' ')
-        if '<' not in valor:
-            #atribuir a regra como sendo final
-            if valor[0:1] not in transitions:
-                newCollumn()
-                transitions.append(valor[0:1])
-                AFND[states.index(regra)][transitions.index(valor[0:1])].append('-')
-            else:
-                AFND[states.index(regra)][transitions.index(valor[0:1])].append('-')
-        else:
-            #verificar se o valor da letra maiuscula ja esta sendo usado para colocar ela no dicionario e colocar outro valor para ela.
-            if valor[0:1] not in transitions:
-                newCollumn()
-                transitions.append(valor[0:1])
-                AFND[states.index(regra)][transitions.index(valor[0:1])].append(valor[2:3])
-            else:
-                AFND[states.index(regra)][transitions.index(valor[0:1])].append(valor[2:3])
+        elif '<' not in production:
+            if 'X' not in states:
+                states.append('X')
+            newLine()
+            AFND[states.index(rule)][transitions.index(production[0])].append('X')
+            final[states.index('X')] = True
 
 def nextState():
     global state
@@ -91,6 +66,8 @@ def nextState():
         realState = 'A'
     elif realState == 'R':
         realState = 'U'
+    elif realState == 'X':
+        realState = 'Y'
     else:
         realState = chr(ord(realState)+1)
     state = realState
@@ -123,9 +100,10 @@ def removeEpsilon():
                 for transition in epsilons[state]:
                     if transition in epsilons:
                         for transition2 in epsilons[transition]:
-                            if transition2 not in epsilons[state]:
+                            if transition2 not in epsilons[state] and transition2 != state:
                                 epsilons[state] += transition2
                                 mudanca = True
+
         print(epsilons)
         for state in epsilons:
             for transition in epsilons[state]:
@@ -133,6 +111,40 @@ def removeEpsilon():
                     for production in AFND[states.index(transition)][i]:
                         if production not in AFND[states.index(state)][i]:
                             AFND[states.index(state)][i].append(production)
+
+def determiniza():
+    mud = True
+    str2 = ''
+    while mud:
+        mud = False
+        for state in states:
+            for tr in transitions:
+                reg = AFND[states.index(state)][transitions.index(tr)]
+
+                if len(reg) > 1 :
+                    print(states.index(state))
+                    print(transitions.index(tr))
+                    reg.sort()
+                    print(reg)
+                    for i in range(len(reg)):
+                        str1 = reg[i]
+                        print('str1'+str1)
+                        str2 = str2 + str1
+                        print('str2'+str2)
+                    if str2 not in states:
+                        states.append(str2)
+                        newLine()
+                        for valor in reg:
+                            for i in range(len(transitions)):
+                                for production in AFND[states.index(valor)][i]:
+                                    if production not in AFND[states.index(str2)][i]:
+                                        AFND[states.index(str2)][i].append(production)
+                        mud = True
+                    str2 = ''
+
+
+
+
 
 def main():
 
@@ -147,13 +159,18 @@ def main():
             addRG2(line)
         else:
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
-
+    removeEpsilon()
+    print(transitions)  #Print AFND final
+    for i in range(len(states)):    #Print AFND final
+        print(final[i],states[i],AFND[i])    #Print AFND final
+    print(changes)
+    determiniza()
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
 
-    removeEpsilon()
+
 
     file.close()
     with open('output.csv', 'w') as file:

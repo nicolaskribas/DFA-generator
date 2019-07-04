@@ -1,7 +1,7 @@
 se
 entao
 senao
-<S> ::= a<A> | e<A> | i<A> | o<A> | u<A> | <A>
+<S> ::= a<A> | e<A> | i<A> | o<A> | u<A> | <A> | b
 <A> ::= a<A> | e<A> | i<A> | o<A> | u<A> | x<B> | ε
 <B> ::= <C>
 <C> ::= a<A>
