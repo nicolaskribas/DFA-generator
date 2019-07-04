@@ -142,6 +142,7 @@ def determiniza():
                         mud = True
                     AFND[states.index(state)][transitions.index(tr)] = [str2]
                     str2 = ''
+                    
 def buscaAtingiveis(inicial):
     accessible = [inicial]
     for state in accessible:
@@ -152,7 +153,7 @@ def buscaAtingiveis(inicial):
                         accessible.append(production[0])
     return accessible
 
-def removeID():
+def removeInaccessible():
     accessible = buscaAtingiveis('S')
     for state in states:
         if state not in accessible:
@@ -160,22 +161,20 @@ def removeID():
             AFND.pop(states.index(state))
             final.pop(states.index(state))
             states.pop(states.index(state))
-    #até aqui remove os inalcancaveis
-    print('inalcancaveis')
-    # for state in states:
-    #     morto = True
-    #     accessible = buscaAtingiveis(state)
-    #     for stateAtingivel in accessible:
-    #         if final[states.index(stateAtingivel)]:
-    #             morto = False
-    #             break
-    #     if morto:
-    #         print('Removendo estado morto'+state)
-    #         AFND.pop(states.index(state))
-    #         final.pop(states.index(state))
-    #         states.pop(states.index(state))
-    #remove os mortos
 
+def removeDead():
+    for state in states:
+        morto = True
+        accessible = buscaAtingiveis(state)
+        for stateAtingivel in accessible:
+            if final[states.index(stateAtingivel)]:
+                morto = False
+                break
+        if morto:
+            print('Removendo estado morto'+state)
+            AFND.pop(states.index(state))
+            final.pop(states.index(state))
+            states.pop(states.index(state))
 
 
 def main():
@@ -208,8 +207,13 @@ def main():
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
-    removeID()
+    removeInaccessible()
     print("\n\nTABELA SEM INALCANSAVEIS")
+    for i in range(len(states)):    #Print AFND final
+        print(final[i],states[i],AFND[i])    #Print AFND final
+    print(changes)
+    #removeDead()
+    print("\n\nTABELA SEM MORTOS")
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
