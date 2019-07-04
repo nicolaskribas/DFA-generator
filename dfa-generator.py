@@ -165,19 +165,19 @@ def removeID():
             states.pop(states.index(state))
     #até aqui remove os inalcancaveis
     print('inalcancaveis')
-    for state in states:
-        morto = True
-        accessible = buscaAtingiveis(state)
-        for stateAtingivel in accessible:
-            if final[state.index(stateAtingivel)]:
-                morto = False
-                break
-        if morto:
-            print('Removendo estado morto'+state)
-            AFND.pop(states.index(state))
-            final.pop(states.index(state))
-            states.pop(states.index(state))
-    #remove os mortos
+    # for state in states:
+    #     morto = True
+    #     accessible = buscaAtingiveis(state)
+    #     for stateAtingivel in accessible:
+    #         if final[states.index(stateAtingivel)]:
+    #             morto = False
+    #             break
+    #     if morto:
+    #         print('Removendo estado morto'+state)
+    #         AFND.pop(states.index(state))
+    #         final.pop(states.index(state))
+    #         states.pop(states.index(state))
+    # #remove os mortos
 
 
 
@@ -216,6 +216,15 @@ def main():
     file.close()
     with open('output.csv', 'w') as file:
         writer = csv.writer(file)
-        writer.writerows(AFND)
+        linha = ['']
+        linha += transitions
+        writer.writerow(linha)
+        for i in range(len(states)):
+            if final[i]:
+                linha = ['*'+states[i]]
+            else:
+                linha = [states[i]]
+            linha += AFND[i]
+            writer.writerow(linha)
     file.close()
 main()
