@@ -146,6 +146,23 @@ def determiniza():
                     AFND[states.index(state)][transitions.index(tr)] = [str2]
                     str2 = ''
 
+def removeID():
+    accessible = ['S']
+    for state in accessible:
+        for production in AFND[states.index(state)]:
+            if len(production) == 1:
+                if production[0] not in accessible:
+                    accessible.append(production[0])
+
+    for state in states:
+        if state not in accessible:
+            print('Removendo estado'+state)
+            AFND.pop(states.index(state))
+            states.pop(states.index(state))
+    #até aqui remove os inalcancaveis
+
+
+
 
 def main():
 
@@ -174,7 +191,7 @@ def main():
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
-    remove()
+    removeID()
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
