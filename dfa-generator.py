@@ -18,7 +18,7 @@ def newCollumn():
     for i in range(len(AFND)):
         AFND[i].append([])
 
-def addRG2(line):
+def addRG(line):
     rule = line.split('::=')[0].strip(' ')[1]
     productions = line.strip('\n').split(' ::= ')[1].split(' | ')
     print(rule)
@@ -111,6 +111,11 @@ def removeEpsilon():
                     for production in AFND[states.index(transition)][i]:
                         if production not in AFND[states.index(state)][i]:
                             AFND[states.index(state)][i].append(production)
+                if final[states.index(transition)]:
+                    final[states.index(state)] = True
+        for state in AFND:
+            state.pop(transitions.index('ε'))
+        transitions.pop(transitions.index('ε'))
 
 def determiniza():
     mud = True
@@ -122,28 +127,24 @@ def determiniza():
                 reg = AFND[states.index(state)][transitions.index(tr)]
 
                 if len(reg) > 1 :
-                    print(states.index(state))
-                    print(transitions.index(tr))
                     reg.sort()
-                    print(reg)
                     for i in range(len(reg)):
                         str1 = reg[i]
-                        print('str1'+str1)
                         str2 = str2 + str1
-                        print('str2'+str2)
                     if str2 not in states:
                         states.append(str2)
                         newLine()
                         for valor in reg:
+                            if final[states.index(valor)]:
+                                final[states.index(str2)] = True
                             for i in range(len(transitions)):
                                 for production in AFND[states.index(valor)][i]:
                                     if production not in AFND[states.index(str2)][i]:
                                         AFND[states.index(str2)][i].append(production)
+
                         mud = True
+                    AFND[states.index(state)][transitions.index(tr)] = [str2]
                     str2 = ''
-
-
-
 
 
 def main():
@@ -156,9 +157,13 @@ def main():
 
     for line in file:
         if line[0] == '<':  #Caso seja um Gramatica Regular ela é adicionada ao Automato
-            addRG2(line)
+            addRG(line)
         else:
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
+    print(transitions)  #Print AFND final
+    for i in range(len(states)):    #Print AFND final
+        print(final[i],states[i],AFND[i])    #Print AFND final
+    print(changes)
     removeEpsilon()
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
@@ -169,8 +174,10 @@ def main():
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
-
-
+    remove()
+    for i in range(len(states)):    #Print AFND final
+        print(final[i],states[i],AFND[i])    #Print AFND final
+    print(changes)
 
     file.close()
     with open('output.csv', 'w') as file:
