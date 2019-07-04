@@ -21,8 +21,6 @@ def newCollumn():
 def addRG(line):
     rule = line.split('::=')[0].strip(' ')[1]
     productions = line.strip('\n').split(' ::= ')[1].split(' | ')
-    print(rule)
-    print(productions)
     if rule not in changes:
         changes[rule] = nextState()
         states.append(state)
@@ -104,7 +102,6 @@ def removeEpsilon():
                                 epsilons[state] += transition2
                                 mudanca = True
 
-        print(epsilons)
         for state in epsilons:
             for transition in epsilons[state]:
                 for i in range(len(AFND[states.index(transition)])):
@@ -177,7 +174,7 @@ def removeID():
     #         AFND.pop(states.index(state))
     #         final.pop(states.index(state))
     #         states.pop(states.index(state))
-    # #remove os mortos
+    #remove os mortos
 
 
 
@@ -194,21 +191,25 @@ def main():
             addRG(line)
         else:
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
+    print("TABELA MONTADA")
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
     removeEpsilon()
+    print("\n\nTABELA SEM EPSILONS")
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
     determiniza()
+    print("\n\nTABELA DETERMINIZADA")
     print(transitions)  #Print AFND final
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
     removeID()
+    print("\n\nTABELA SEM INALCANSAVEIS")
     for i in range(len(states)):    #Print AFND final
         print(final[i],states[i],AFND[i])    #Print AFND final
     print(changes)
