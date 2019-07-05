@@ -115,7 +115,7 @@ def removeEpsilon():
             state.pop(alphabet.index('ε'))
         alphabet.pop(alphabet.index('ε'))
 
-def determiniza():
+def determinize():
     mud = True
     str2 = ''
     while mud:
@@ -215,8 +215,8 @@ def main():
     for i in range(len(states)):    #Print AF final
         print(final[i],states[i],AF[i])    #Print AF final
     print(changes)
-    determiniza()
-    print("\n\nTABELA DETERMINIZADA")
+    determinize()
+    print("\n\nTABELA determinizeDA")
     print(alphabet)  #Print AF final
     for i in range(len(states)):    #Print AF final
         print(final[i],states[i],AF[i])    #Print AF final
