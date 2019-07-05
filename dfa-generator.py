@@ -8,9 +8,7 @@ realState = 'S'
 changes = {'S':'S'}
 epsilons = {}
 mortos = []
-#novo valor -> changes['A'] = 'M'
-#if 'A' in changes:
-#   temp = changes['A']
+
 def newLine():
     AF.append([[] for _ in range(len(alphabet))])
     final.append(False)
@@ -216,7 +214,7 @@ def main():
         print(final[i],states[i],AF[i])    #Print AF final
     print(changes)
     determinize()
-    print("\n\nTABELA determinizeDA")
+    print("\n\nTABELA DETERMINIZADA")
     print(alphabet)  #Print AF final
     for i in range(len(states)):    #Print AF final
         print(final[i],states[i],AF[i])    #Print AF final
