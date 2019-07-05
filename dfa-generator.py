@@ -1,22 +1,23 @@
 import csv
-AFND = []
+AF = []
 states = []
 final = []
-transitions = []
+alphabet = []
 state = 'S'
 realState = 'S'
 changes = {'S':'S'}
 epsilons = {}
+mortos = []
 #novo valor -> changes['A'] = 'M'
 #if 'A' in changes:
 #   temp = changes['A']
 def newLine():
-    AFND.append([[] for _ in range(len(transitions))])
+    AF.append([[] for _ in range(len(alphabet))])
     final.append(False)
 
 def newCollumn():
-    for i in range(len(AFND)):
-        AFND[i].append([])
+    for i in range(len(AF)):
+        AF[i].append([])
 
 def addRG(line):
     rule = line.split('::=')[0].strip(' ')[1]
@@ -29,32 +30,32 @@ def addRG(line):
     else:
         rule = changes[rule]
     for production in productions:
-        if production[0] not in transitions and production[0] != 'ε' and '<' not in production[0]:
+        if production[0] not in alphabet and production[0] != 'ε' and '<' not in production[0]:
             newCollumn()
-            transitions.append(production[0])
+            alphabet.append(production[0])
         elif production[0] == '<':
-            if 'ε' not in transitions:
+            if 'ε' not in alphabet:
                 newCollumn()
-                transitions.append('ε')
+                alphabet.append('ε')
             if production[1] not in changes:
                 changes[production[1]] = nextState()
                 states.append(state)
                 newLine()
-            AFND[states.index(rule)][transitions.index('ε')].append(changes[production[1]])
+            AF[states.index(rule)][alphabet.index('ε')].append(changes[production[1]])
             continue;
         if '<' in production:
             if production[2] not in changes:
                 changes[production[2]] = nextState()
                 states.append(state)
                 newLine()
-            AFND[states.index(rule)][transitions.index(production[0])].append(changes[production[2]])
+            AF[states.index(rule)][alphabet.index(production[0])].append(changes[production[2]])
         elif 'ε' in production:
             final[states.index(rule)] = True
         elif '<' not in production:
             if 'X' not in states:
                 states.append('X')
             newLine()
-            AFND[states.index(rule)][transitions.index(production[0])].append('X')
+            AF[states.index(rule)][alphabet.index(production[0])].append('X')
             final[states.index('X')] = True
 
 def nextState():
@@ -76,21 +77,21 @@ def addToken(line):
     state = 'S'
     for symbol in line:
         if '\n' != symbol:
-            if symbol not in transitions:
+            if symbol not in alphabet:
                 newCollumn()
-                transitions.append(symbol)
+                alphabet.append(symbol)
             newLine()
-            AFND[states.index(state)][transitions.index(symbol)].append(nextState())
+            AF[states.index(state)][alphabet.index(symbol)].append(nextState())
             states.append(state)
     final[states.index(state)] = True
 
 def removeEpsilon():
-    if 'ε' in transitions:
+    if 'ε' in alphabet:
         for state in states:
             if state in epsilons:
-                epsilons[state] += AFND[states.index(state)][transitions.index('ε')]
+                epsilons[state] += AF[states.index(state)][alphabet.index('ε')]
             else:
-                epsilons[state] = AFND[states.index(state)][transitions.index('ε')]
+                epsilons[state] = AF[states.index(state)][alphabet.index('ε')]
         mudanca = True
         while mudanca:
             mudanca = False
@@ -104,15 +105,15 @@ def removeEpsilon():
 
         for state in epsilons:
             for transition in epsilons[state]:
-                for i in range(len(AFND[states.index(transition)])):
-                    for production in AFND[states.index(transition)][i]:
-                        if production not in AFND[states.index(state)][i]:
-                            AFND[states.index(state)][i].append(production)
+                for i in range(len(AF[states.index(transition)])):
+                    for production in AF[states.index(transition)][i]:
+                        if production not in AF[states.index(state)][i]:
+                            AF[states.index(state)][i].append(production)
                 if final[states.index(transition)]:
                     final[states.index(state)] = True
-        for state in AFND:
-            state.pop(transitions.index('ε'))
-        transitions.pop(transitions.index('ε'))
+        for state in AF:
+            state.pop(alphabet.index('ε'))
+        alphabet.pop(alphabet.index('ε'))
 
 def determiniza():
     mud = True
@@ -120,8 +121,8 @@ def determiniza():
     while mud:
         mud = False
         for state in states:
-            for tr in transitions:
-                reg = AFND[states.index(state)][transitions.index(tr)]
+            for tr in alphabet:
+                reg = AF[states.index(state)][alphabet.index(tr)]
 
                 if len(reg) > 1 :
                     reg.sort()
@@ -134,20 +135,20 @@ def determiniza():
                         for valor in reg:
                             if final[states.index(valor)]:
                                 final[states.index(str2)] = True
-                            for i in range(len(transitions)):
-                                for production in AFND[states.index(valor)][i]:
-                                    if production not in AFND[states.index(str2)][i]:
-                                        AFND[states.index(str2)][i].append(production)
+                            for i in range(len(alphabet)):
+                                for production in AF[states.index(valor)][i]:
+                                    if production not in AF[states.index(str2)][i]:
+                                        AF[states.index(str2)][i].append(production)
 
                         mud = True
-                    AFND[states.index(state)][transitions.index(tr)] = [str2]
+                    AF[states.index(state)][alphabet.index(tr)] = [str2]
                     str2 = ''
-                    
+
 def buscaAtingiveis(inicial):
     accessible = [inicial]
     for state in accessible:
         if state in states:
-            for production in AFND[states.index(state)]:
+            for production in AF[states.index(state)]:
                 if len(production) == 1:
                     if production[0] not in accessible:
                         accessible.append(production[0])
@@ -158,11 +159,12 @@ def removeInaccessible():
     for state in states:
         if state not in accessible:
             print('Removendo estado'+state)
-            AFND.pop(states.index(state))
+            AF.pop(states.index(state))
             final.pop(states.index(state))
             states.pop(states.index(state))
 
 def removeDead():
+    global mortos
     for state in states:
         morto = True
         accessible = buscaAtingiveis(state)
@@ -171,17 +173,29 @@ def removeDead():
                 morto = False
                 break
         if morto:
-            print('Removendo estado morto'+state)
-            AFND.pop(states.index(state))
-            final.pop(states.index(state))
-            states.pop(states.index(state))
+            mortos.append(state)
+    for state in mortos:
+        AF.pop(states.index(state))
+        final.pop(states.index(state))
+        states.pop(states.index(state))
+
+def addError():
+    states.append('Error')
+    newLine()
+    final[states.index('Error')] = True
+    for state in AF:
+        for transition in state:
+            if len(transition) < 1:
+                transition.append('Error')
+            elif transition[0] in mortos:
+                transition[0] = 'Error'
 
 
 def main():
 
     file = open("input.txt","r")
     states.append('S')  #Adiciona o estado inicial S
-    AFND.append([]) #Adiciona linha na tabela
+    AF.append([]) #Adiciona linha na tabela
     final.append(False)
 
 
@@ -191,45 +205,49 @@ def main():
         else:
             addToken(line)  #Caso seja um Token ele é adicionado ao Automato
     print("TABELA MONTADA")
-    print(transitions)  #Print AFND final
-    for i in range(len(states)):    #Print AFND final
-        print(final[i],states[i],AFND[i])    #Print AFND final
+    print(alphabet)  #Print AF final
+    for i in range(len(states)):    #Print AF final
+        print(final[i],states[i],AF[i])    #Print AF final
     print(changes)
     removeEpsilon()
     print("\n\nTABELA SEM EPSILONS")
-    print(transitions)  #Print AFND final
-    for i in range(len(states)):    #Print AFND final
-        print(final[i],states[i],AFND[i])    #Print AFND final
+    print(alphabet)  #Print AF final
+    for i in range(len(states)):    #Print AF final
+        print(final[i],states[i],AF[i])    #Print AF final
     print(changes)
     determiniza()
     print("\n\nTABELA DETERMINIZADA")
-    print(transitions)  #Print AFND final
-    for i in range(len(states)):    #Print AFND final
-        print(final[i],states[i],AFND[i])    #Print AFND final
+    print(alphabet)  #Print AF final
+    for i in range(len(states)):    #Print AF final
+        print(final[i],states[i],AF[i])    #Print AF final
     print(changes)
     removeInaccessible()
     print("\n\nTABELA SEM INALCANSAVEIS")
-    for i in range(len(states)):    #Print AFND final
-        print(final[i],states[i],AFND[i])    #Print AFND final
+    for i in range(len(states)):    #Print AF final
+        print(final[i],states[i],AF[i])    #Print AF final
     print(changes)
-    #removeDead()
+    removeDead()
     print("\n\nTABELA SEM MORTOS")
-    for i in range(len(states)):    #Print AFND final
-        print(final[i],states[i],AFND[i])    #Print AFND final
+    for i in range(len(states)):    #Print AF final
+        print(final[i],states[i],AF[i])    #Print AF final
     print(changes)
-
+    addError()
+    print("\n\nTABELA COM ESTADO DE ERRO")
+    for i in range(len(states)):    #Print AF final
+        print(final[i],states[i],AF[i])    #Print AF final
+    print(changes)
     file.close()
     with open('output.csv', 'w') as file:
         writer = csv.writer(file)
         linha = ['']
-        linha += transitions
+        linha += alphabet
         writer.writerow(linha)
-        for i in range(len(states)):
+        for i in range(len(AF)):
             if final[i]:
                 linha = ['*'+states[i]]
             else:
                 linha = [states[i]]
-            linha += AFND[i]
+            linha += AF[i]
             writer.writerow(linha)
     file.close()
 main()
