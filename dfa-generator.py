@@ -179,16 +179,16 @@ def removeDead():
         final.pop(states.index(state))
         states.pop(states.index(state))
 
-def addError():
-    states.append('Error')
+def addØ():
+    states.append('Ø')
     newLine()
-    final[states.index('Error')] = True
+    final[states.index('Ø')] = True
     for state in AF:
         for transition in state:
             if len(transition) < 1:
-                transition.append('Error')
+                transition.append('Ø')
             elif transition[0] in mortos:
-                transition[0] = 'Error'
+                transition[0] = 'Ø'
 
 
 def main():
@@ -231,7 +231,7 @@ def main():
     for i in range(len(states)):    #Print AF final
         print(final[i],states[i],AF[i])    #Print AF final
     print(changes)
-    addError()
+    addØ()
     print("\n\nTABELA COM ESTADO DE ERRO")
     for i in range(len(states)):    #Print AF final
         print(final[i],states[i],AF[i])    #Print AF final
