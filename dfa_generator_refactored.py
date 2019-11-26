@@ -7,21 +7,39 @@ class FiniteAutomaton(object):
         self.finite_automaton = {}
         self.final = []
 
-    def add_to_mapping(self, rule_name):
+    def get_state(self, rule_name):
         if rule_name not in self.states_mapping:
             self.states_mapping[rule_name] = self.number_of_states
             self.number_of_states = self.number_of_states + 1
+        return self.states_mapping[rule_name]
+
+    def get_terminal(self, production):
+        terminal = production.split('<')[0].strip()
+        if terminal == '':
+            return None
+        return terminal
+
+    def get_non_terminal(self, production):
+        try:
+            non_terminal = production.split('<')[1].strip(' >')
+        except:
+            non_terminal = None
+        return non_terminal
 
     def add_regular_grammar(self, regular_grammar):
         regular_grammar = regular_grammar.split('::=')
         rule_name = regular_grammar[0].strip(' <>')
 
-        self.add_to_mapping(rule_name)
+        state = self.get_state(rule_name)
 
         productions = regular_grammar[1].split('|')
         for production in productions:
-            # symbol = production.strip(' ').split('<')[0]
-            # state = production.split('<'[])
+            terminal = self.get_terminal(production)
+            non_terminal = self.get_non_terminal(production)
+
+            self.finite_automaton[state][terminal] = self.get_state(non_terminal)
+
+
 
 
 
